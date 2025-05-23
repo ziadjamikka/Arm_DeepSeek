@@ -1,0 +1,19 @@
+api_key: "sk-377b12f5788a4c1db05e75787b26b315"
+baudrate: 1000000
+dynamixel_port: "COM7"
+
+motors:
+  shoulder_pan: 1
+  shoulder_lift: 2
+  elbow_flex: 3
+  wrist_flex: 4
+  wrist_roll: 5
+  gripper: 6
+
+joint_limits:
+  shoulder_pan: {min: 1025, max: 3005}
+  shoulder_lift: {min: 575, max: 1575}
+  elbow_flex: {min: 1813, max: 3225}
+  wrist_flex: {min: 808, max: 3068}
+  wrist_roll: {min: 3014, max: 5121}
+  gripper: {min: 1988, max: 2989}

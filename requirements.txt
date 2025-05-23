@@ -1,0 +1,9 @@
+dynamixel-sdk==3.7.31
+pyserial==3.5
+aiohttp==3.9.3
+PyYAML==6.0.1
+asyncio==3.4.3
+opencv-python
+numpy
+torch
+ultralytics

@@ -1,0 +1,121 @@
+<mujoco model="low_cost_robot">
+    <compiler angle="radian" meshdir="assets" texturedir="assets" autolimits="true"/>
+    <option cone="elliptic" impratio="10" timestep="0.001"/>
+
+    <!-- White background settings -->
+    <visual>
+        <global offwidth="1920" offheight="1080"/>
+        <rgba fog="1 1 1 1" haze="1 1 1 1"/>
+        <map znear="0.01" zfar="10"/>
+        <quality shadowsize="2048"/>
+    </visual>
+
+    <asset>
+        <mesh file="base_link.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="first-bracket-motor_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="shoulder-to-elbow-motor_v1_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="elbow-to-wrist-motor-reference_v1_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="gripper-static-motor-pt1.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="gripper-static-motor-pt2.stl" scale="0.001 0.001 0.001"/>
+        <mesh file="gripper-moving-part-dumb_v2_1.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="mouse_mesh" file="simulated_mouse.stl" scale="1 1 1"/>
+    </asset>
+
+    <default>
+        <default class="low_cost_robot">
+            <general biastype="affine"/>
+            
+            <!-- Updated joint classes with proper naming -->
+            <default class="shoulder_pan">
+                <joint axis="0 0 1" pos="0.00025 0.06875 0.0409" range="-3.14158 3.14158" damping="0.1"/>
+                <position ctrlrange="-3.14158 3.14158" kp="25"/>
+            </default>
+            <default class="shoulder_lift">
+                <joint axis="1 0 0" pos="0.01945 0.06895 0.05515" range="-3.14158 3.14158" damping="0.1"/>
+                <position ctrlrange="-3.14158 3.14158" kp="25"/>
+            </default>
+            <default class="elbow_flex">
+                <joint axis="1 0 0" pos="-0.0143 0.08375 0.16345" range="-3.14158 3.14158" damping="0.1"/>
+                <position ctrlrange="-3.14158 3.14158" kp="25"/>
+            </default>
+            <default class="wrist_flex">
+                <joint axis="0 -1 0" pos="-0.000893 0.128688 0.163437" range="-3.14158 3.14158" damping="0.1"/>
+                <position ctrlrange="-3.14158 3.14158" kp="25"/>
+            </default>
+            <default class="wrist_roll">
+                <joint axis="0 0 -1" pos="-0.008443 0.141678 0.177687" range="-3.14158 3.14158" damping="0.1"/>
+                <position ctrlrange="-3.14158 3.14158" kp="25"/>
+            </default>
+            <default class="gripper">
+                <joint axis="0 0 -1" pos="-0.008443 0.141678 0.177687" range="-2.45 0.032" damping="0.1"/>
+                <position ctrlrange="-2.45 0.032" kp="25"/>
+            </default>
+        </default>
+    </default>
+
+    <worldbody>
+        <!-- White floor -->
+        <geom name="floor" type="plane" size="5 5 0.1" pos="0 0 -0.1" rgba="1 1 1 1"/>
+
+        <!-- Robot Base -->
+        <body name="base_link" pos="0.0 0.0 0.0">
+            <geom type="mesh" name="base_link" mesh="base_link" rgba="1 1 1 1"/>
+            <body name="shoulder_pan">
+                <joint name="shoulder_pan" class="shoulder_pan"/>
+                <geom type="mesh" name="shoulder_pan" mesh="first-bracket-motor_1" rgba="0.1 0.1 0.1 1"/>
+                <body name="shoulder_lift">
+                    <joint name="shoulder_lift" class="shoulder_lift"/>
+                    <geom type="mesh" name="shoulder_lift" mesh="shoulder-to-elbow-motor_v1_1" rgba="0.1 0.1 0.1 1"/>
+                    <body name="elbow_flex">
+                        <joint name="elbow_flex" class="elbow_flex"/>
+                        <geom type="mesh" name="elbow_flex" mesh="elbow-to-wrist-motor-reference_v1_1" rgba="0.1 0.1 0.1 1"/>
+                        <body name="wrist_flex">
+                            <joint name="wrist_flex" class="wrist_flex"/>
+                            <geom type="mesh" name="wrist_flex-pt1" mesh="gripper-static-motor-pt1" rgba="0.1 0.1 0.1 1"/>
+                            <geom type="mesh" name="wrist_flex" mesh="gripper-static-motor-pt2" rgba="0.1 0.1 0.1 1" contype="0" conaffinity="0"/>
+                            <body name="wrist_roll">
+                                <joint name="wrist_roll" class="wrist_roll"/>
+                                <geom type="mesh" name="wrist_roll" mesh="gripper-static-motor-pt2" rgba="0.1 0.1 0.1 1"/>
+                                <body name="gripper">
+                                    <joint name="gripper" class="gripper"/>
+                                    <geom type="mesh" name="gripper" mesh="gripper-moving-part-dumb_v2_1" rgba="0.1 0.1 0.1 1" contype="0" conaffinity="0"/>
+                                    <body name="gripper_pad">
+                                        <geom type="box" condim="3" friction="1.5" mass="0.01" solimp="0.95 0.99 0.001" solref="0.004 1" name="moving_finger_pad" size="0.006 0.006 0.006" pos="-0.0007 0.192 0.1635" euler="0 0 -0.3" priority="1" rgba="0 0 0 0"/>
+                                    </body>
+                                </body>
+                            </body>
+                            <body name="static_pad">
+                                <geom type="box" condim="3" friction="1.5" mass="0.01" solimp="0.95 0.99 0.001" solref="0.004 1" name="static_finger_pad" size="0.006 0.006 0.006" pos="0.0135 0.192 0.1635" priority="1" rgba="0 0 0 0"/>
+                            </body>
+                            <body>
+                                <geom type="sphere" name="end_effector" size="0.001" pos="-0.005 0.1935 0.1635" contype="0" conaffinity="0" rgba="0 0 0 0"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+
+        <!-- 🐭 Mouse Object -->
+
+        <body name="mouse" pos="0.0 0.25 0.05">
+            <joint type="slide" axis="0 0 1" limited="true" range="0 0.001" stiffness="500" damping="10"/>
+            <geom type="mesh" mesh="mouse_mesh" mass="0.05" friction="1.5" solimp="0.9 0.99 0.001" solref="0.02 1" rgba="0.3 0.3 0.3 1"/>
+        </body>
+<!-- 
+        <body name="mouse" pos="0.0 0.05 0.025" quat="0.707 0 0 0.707">
+            <joint type="free"/>
+            <geom type="mesh" mesh="mouse_mesh" mass="0.05" friction="1.0" rgba="0.3 0.3 0.3 1"/>
+        </body> -->
+    
+    </worldbody>
+
+    <actuator>
+        <position class="shoulder_pan" name="shoulder_pan" joint="shoulder_pan"/>
+        <position class="shoulder_lift" name="shoulder_lift" joint="shoulder_lift"/>
+        <position class="elbow_flex" name="elbow_flex" joint="elbow_flex"/>
+        <position class="wrist_flex" name="wrist_flex" joint="wrist_flex"/>
+        <position class="wrist_roll" name="wrist_roll" joint="wrist_roll"/>
+        <position class="gripper" name="gripper" joint="gripper"/>
+    </actuator>
+</mujoco>
